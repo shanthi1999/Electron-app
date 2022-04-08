@@ -1,0 +1,93 @@
+{
+  "name": "virtualstaffworklogapp",
+  "productName": "VirtualStaff Work Log App",
+  "version": "1.0.0",
+  "description": "VirtualStaff Work Log App",
+  "main": ".webpack/main",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\""
+  },
+  "keywords": [],
+  "author": "Virtual-staff-phoenix",
+  "license": "MIT",
+  "config": {
+    "forge": {
+      "packagerConfig": {
+        "icon": "./src/icons/win/icon.ico"
+      },
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ],
+      "plugins": [
+        [
+          "@electron-forge/plugin-webpack",
+          {
+            "devContentSecurityPolicy": "default-src * self blob: data: gap:; style-src * self 'unsafe-inline' blob: data: gap:; script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:; object-src * 'self' blob: data: gap:; img-src * self 'unsafe-inline' blob: data: gap:; connect-src self * 'unsafe-inline' blob: data: gap:; frame-src * self blob: data: gap:;",
+            "mainConfig": "./webpack.main.config.js",
+            "renderer": {
+              "config": "./webpack.renderer.config.js",
+              "entryPoints": [
+                {
+                  "html": "./src/index.html",
+                  "js": "./src/renderer.js",
+                  "name": "main_window"
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  },
+  "devDependencies": {
+    "@babel/core": "^7.16.5",
+    "@babel/plugin-proposal-object-rest-spread": "^7.17.3",
+    "@babel/preset-react": "^7.16.5",
+    "@electron-forge/cli": "^6.0.0-beta.61",
+    "@electron-forge/maker-deb": "^6.0.0-beta.61",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.61",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.61",
+    "@electron-forge/maker-wix": "^6.0.0-beta.61",
+    "@electron-forge/maker-zip": "^6.0.0-beta.61",
+    "@electron-forge/plugin-webpack": "^6.0.0-beta.61",
+    "@vercel/webpack-asset-relocator-loader": "^1.7.0",
+    "babel-loader": "^8.2.3",
+    "css-loader": "^6.5.1",
+    "electron": "^16.0.5",
+    "electron-prebuilt-compile": "1.7.9",
+    "node-loader": "^2.0.0",
+    "style-loader": "^3.3.1"
+  },
+  "dependencies": {
+    "axios": "^0.24.0",
+    "electron-forge": "^5.2.4",
+    "electron-icon-builder": "^2.0.1",
+    "electron-squirrel-startup": "^1.0.0",
+    "prop-types": "^15.8.0",
+    "react": "^17.0.2",
+    "react-detect-offline": "^2.4.5",
+    "react-dom": "^17.0.2",
+    "use-screenshot-hook": "^1.0.2"
+  }
+}
