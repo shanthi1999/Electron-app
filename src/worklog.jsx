@@ -13,7 +13,7 @@ const WorkLog = () => {
   const ref = React.useRef(null);
   const imageRef = React.useRef(null);
   const countRef = React.useRef(null);
-  const [Employers, setEmployers] = React.useState([]);
+  const [Employers, setEmployers] = React.useState(null);
   const [timer, setTimer] = React.useState(0);
   const [images, setImages] = React.useState([]);
   const [latesttime, setLatestTime] = React.useState(0);
@@ -49,7 +49,7 @@ const WorkLog = () => {
     );
   }, [JSON.parse(window.localStorage.getItem("userData"))]);
 
-  const employerList = async () => {
+  const employerList = async (token=null) => {
     const config = {
       method: "POST",
       url: `https://jobseekerapi.virtualstaff.ph/api/v1/job-seeker/hired-employer/list`,
@@ -64,16 +64,20 @@ const WorkLog = () => {
         "Content-Type": "application/json",
         Accept: "application/json",
         "Access-Control-Allow-Origin": "*",
-        Authorization: window.localStorage.getItem("token"),
+        Authorization: window.localStorage.getItem("token") || token,
       },
     };
     axios(config)
       .then((a) => {
+        // console.log("a..........",a.data.result.data.data)
         if (a.data) {
           setEmployers(a.data.result.data.data);
+          // setLoginValidations(true);
         }
       })
-      .catch((err) => {});
+      .catch((err) => {
+        // setLoginValidations(false);
+      });
   };
 
   React.useEffect(() => {
@@ -309,7 +313,7 @@ const WorkLog = () => {
         });
         setUserValidation(sampleUserValidation);
         // setUserValidation({ ...userValidation, password: false });
-        employerList();
+        employerList(a.data.result.access_token);
       })
       .catch((err) => {
         setUserDatas({
@@ -330,7 +334,9 @@ const WorkLog = () => {
     e.preventDefault();
     let name = e.target.name;
     if (name == "user_email") {
-      var regx = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+      var regx = /^[a-zA-Z0-9+_.-]+@[a-zA-Z.-]+\.[a-zA-Z]+$/;
+
+      // "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$"
       let data = regx.test(e.target.value);
       let sampleUserData = Object.assign({}, userDatas, {
         user_email: data ? e.target.value : e.target.value,
@@ -478,7 +484,7 @@ const WorkLog = () => {
         />
         <p className="worklog">Work Log </p>
       </div>
-      {loginValdations ? (
+      {loginValdations  ? (
         <div>
           <p className="loggedIn">
             Logged in as a{" "}
@@ -496,9 +502,11 @@ const WorkLog = () => {
             <option value="select" className="options">
               Select employer
             </option>
-            {Employers &&
+            {/* {console.log("Employers",Employers)} */}
+            {Employers && Employers.length &&
               Employers.map((e) =>
                 e.employement_status == "working" ? (
+                  e.hired_job_id &&  e.job_id &&
                   <option key={e.hired_job_id._id} value={e.hired_job_id._id}>
                     {e.job_id.job_title} - {e.employer_id.user_email}
                   </option>
