@@ -49,14 +49,16 @@ const WorkLog = () => {
     );
   }, [JSON.parse(window.localStorage.getItem("userData"))]);
 
-  const employerList = async (token=null) => {
+  const employerList = async (token = null) => {
     const config = {
       method: "POST",
-      url: `https://jobseekerapi.virtualstaff.ph/api/v1/job-seeker/hired-employer/list`,
+      url: `https://phoenix-job-seeker.colan.in/api/v1/job-seeker/hired-employer/list`,
       data: {
-        employer_id:
-          JSON.parse(window.localStorage.getItem("userData")) &&
-          JSON.parse(window.localStorage.getItem("userData")).user_id,
+        query: {
+          user_id:
+            JSON.parse(window.localStorage.getItem("userData")) &&
+            JSON.parse(window.localStorage.getItem("userData")).user_id,
+        },
         skip: 0,
         limit: 0,
       },
@@ -484,7 +486,7 @@ const WorkLog = () => {
         />
         <p className="worklog">Work Log </p>
       </div>
-      {loginValdations  ? (
+      {loginValdations ? (
         <div>
           <p className="loggedIn">
             Logged in as a{" "}
@@ -503,16 +505,20 @@ const WorkLog = () => {
               Select employer
             </option>
             {/* {console.log("Employers",Employers)} */}
-            {Employers && Employers.length &&
+            {Employers &&
+              Employers.length &&
               Employers.map((e) =>
-                e.employement_status == "working" ? (
-                  e.hired_job_id &&  e.job_id &&
-                  <option key={e.hired_job_id._id} value={e.hired_job_id._id}>
-                    {e.job_id.job_title} - {e.employer_id.user_email}
-                  </option>
-                ) : (
-                  " "
-                )
+                e.employement_status == "working"
+                  ? e.hired_job_id &&
+                    e.job_id && (
+                      <option
+                        key={e.hired_job_id._id}
+                        value={e.hired_job_id._id}
+                      >
+                        {e.job_id.job_title} - {e.employer_id.user_email}
+                      </option>
+                    )
+                  : " "
               )}
           </select>
           <br />
