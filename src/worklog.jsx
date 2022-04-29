@@ -37,7 +37,7 @@ const WorkLog = () => {
   });
   const [todayTrackedTImes, setTodayTrackedTImes] = React.useState(0);
   const [loginValdations, setLoginValidations] = React.useState(false);
-
+   const [tempNewVersion, setTempNewVersion] = React.useState(true)
   const [project, setProject] = React.useState("select");
   const [offline, setOffLine] = React.useState(true);
 
@@ -53,7 +53,7 @@ const WorkLog = () => {
   const checkNewVersions = () => {
     const config = {
       method: "POST",
-      url: `http://localhost:9090/api/v1/auth/versionCheck`, //https://authapi.virtualstaff.ph/api/v1/auth/trackerlogin
+      url: `https://authapi.virtualstaff.ph/api/v1/auth/versionCheck`, //https://authapi.virtualstaff.ph/api/v1/auth/trackerlogin
       data: {},
       headers: {
         "Content-Type": "application/json",
@@ -65,11 +65,13 @@ const WorkLog = () => {
     axios(config)
       .then(async (e) => {
         if (e.data.result.status !== 501) {
-          console.log("one.....................")
+          setTempNewVersion(false)
+          // console.log("one.....................")
           window.localStorage.removeItem("newVersion");
           setnewversionsCheck(false);
-        } else if(e.data.result.status === 501) {
-          console.log("two.....................")
+        } else if (e.data.result.status === 501) {
+          setTempNewVersion(true)
+          // console.log("two.....................")
           window.localStorage.setItem("newVersion", true);
           setnewversionsCheck(true);
           window.localStorage.removeItem("userData");
@@ -80,6 +82,7 @@ const WorkLog = () => {
       })
       .catch((err) => {
         if (JSON.parse(JSON.stringify(err)).status === 501) {
+          setTempNewVersion(true)
           window.localStorage.setItem("newVersion", true);
           setnewversionsCheck(true);
           window.localStorage.removeItem("userData");
@@ -87,6 +90,7 @@ const WorkLog = () => {
           window.localStorage.removeItem("Project");
           setLoginValidations(false);
         } else {
+          setTempNewVersion(false)
           window.localStorage.removeItem("newVersion");
           setnewversionsCheck(false);
         }
@@ -104,11 +108,11 @@ const WorkLog = () => {
       method: "POST",
       url: `https://jobseekerapi.virtualstaff.ph/api/v1/job-seeker/hired-employer/list`,
       data: {
-        // query: {
+        query: {
           user_id:
             JSON.parse(window.localStorage.getItem("userData")) &&
             JSON.parse(window.localStorage.getItem("userData")).user_id,
-        // },
+        },
         skip: 0,
         limit: 0,
       },
@@ -124,9 +128,11 @@ const WorkLog = () => {
       .then((a) => {
         // console.log("a..........",a.data.result.data.data)
         if (a.data && a.data.result.status !== 501) {
+          setTempNewVersion(false)
           setEmployers(a.data.result.data.data);
           // setLoginValidations(true);
         } else {
+          setTempNewVersion(true)
           window.localStorage.setItem("newVersion", true);
           setnewversionsCheck(true);
           window.localStorage.removeItem("userData");
@@ -136,6 +142,7 @@ const WorkLog = () => {
       })
       .catch((err) => {
         if (JSON.parse(JSON.stringify(err)).status === 501) {
+          setTempNewVersion(true)
           window.localStorage.setItem("newVersion", true);
           setnewversionsCheck(true);
           window.localStorage.removeItem("userData");
@@ -379,6 +386,7 @@ const WorkLog = () => {
         });
         setLoading(false);
         if (a.data.result.status !== 501) {
+          setTempNewVersion(false)
           window.localStorage.setItem("token", a.data.result.access_token);
           window.localStorage.setItem(
             "userData",
@@ -392,6 +400,7 @@ const WorkLog = () => {
           // setUserValidation({ ...userValidation, password: false });
           employerList(a.data.result.access_token);
         } else {
+          setTempNewVersion(true)
           window.localStorage.setItem("newVersion", true);
           setnewversionsCheck(true);
           window.localStorage.removeItem("userData");
@@ -402,6 +411,7 @@ const WorkLog = () => {
       })
       .catch((err) => {
         if (JSON.parse(JSON.stringify(err)).status === 501) {
+          setTempNewVersion(true)
           window.localStorage.setItem("newVersion", true);
           setnewversionsCheck(true);
           setLoading(false);
@@ -414,6 +424,7 @@ const WorkLog = () => {
           window.localStorage.removeItem("Project");
           setLoginValidations(false);
         } else {
+          setTempNewVersion(false)
           console.log("err", JSON.parse(JSON.stringify(err)));
           setUserDatas({
             user_email: "",
@@ -589,8 +600,8 @@ const WorkLog = () => {
   // console.log("before return", userValidation, userDatas);
   return (
     <div className="app">
-      {Boolean(window.localStorage.getItem("newVersion")) !== true ||
-      newversionsCheck !== true ? (
+      {(Boolean(window.localStorage.getItem("newVersion")) !== true || tempNewVersion !==true) ||
+      (newversionsCheck !== true || tempNewVersion !==true) ? (
         <div>
           {console.log(
             "window.localStorage.getItem(newVersion) !== true",
@@ -812,69 +823,63 @@ const WorkLog = () => {
               )}
             />
           </div>
-          <div>
-            <p
-              style={{
-                color: "black",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              verison 1.0.0
-            </p>
-          </div>
+         
         </div>
       ) : (
         <div
+          id="myModal"
+          class="modal"
           style={{
             display: "flex",
-            padding: "15px",
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
             textAlign: "center",
           }}
         >
-          <div
-            style={{
-              padding: "10px 0px",
-              fontSize: "50px",
-              color: "rgb(165 160 160)",
-            }}
-          >
-            <i class="fas fa-solid fa-bell-exclamation"></i>
-          </div>
-          <div
-            style={{ padding: "10px 0px", fontSize: "25px", fontWeight: 700 }}
-          >
-            New Version is Now Available
-          </div>
-          <div style={{ padding: "10px 0px", width: "390px" }}>
-            We require all users to please download, install and use the latest
-            VritualStaff.ph Work Log. We have made major performance and
-            stability improvements and fixed some issues.
-          </div>
-          {/* <div style={{padding:"10px 0px"}}>We have made major performance and stability improvements and fixed some issues.</div> */}
-          <div
-            style={{
-              padding: "10px 0px",
-              width: "50%",
-              display: "flex",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-            }}
-          >
-            <button style={{ fontSize: "15px", padding: "15px" }} id="btn_stop">
-              <a
-              style={{color:"#fff", textDecoration:"none", fontWeight:700}}
-                href="https://app.virtualstaff.ph/jobseeker/install/tracker"
-                target="_blank"
-                // onClick={electronOpenLinkInBrowser.bind(this)}
+          <div class="modal-content">
+            <div onClick={()=>setTempNewVersion(false)} style={{width:"100%", cursor:"pointer", display:'flex',justifyContent:"end"}}>
+            &#x274c;
+            </div>
+         
+            <div
+              style={{ padding: "10px 0px", fontSize: "25px", fontWeight: 700 }}
+            >
+              New Version is Now Available
+            </div>
+            <div style={{ padding: "10px 0px", width: "350px" }}>
+              We require all users to please download, install and use the
+              latest VritualStaff.ph Work Log. We have made major performance
+              and stability improvements and fixed some issues.
+            </div>
+            {/* <div style={{padding:"10px 0px"}}>We have made major performance and stability improvements and fixed some issues.</div> */}
+            <div
+              style={{
+                padding: "10px 0px",
+                // width: "50%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <button
+                style={{ fontSize: "15px", padding: "15px" }}
+                id="btn_stop"
               >
-                Update
-              </a>
-            </button>
+                <a
+                  style={{
+                    color: "#fff",
+                    textDecoration: "none",
+                    fontWeight: 700,
+                  }}
+                  href="https://app.virtualstaff.ph/jobseeker/install/tracker"
+                  target="_blank"
+                  // onClick={electronOpenLinkInBrowser.bind(this)}
+                >
+                  Update
+                </a>
+              </button>
+            </div>
           </div>
         </div>
       )}
