@@ -838,7 +838,7 @@ const WorkLog = () => {
           }}
         >
           <div class="modal-content">
-            <div onClick={()=>setTempNewVersion(false)} style={{width:"100%", cursor:"pointer", display:'flex',justifyContent:"end"}}>
+            <div onClick={()=>setTempNewVersion(false)} style={{marginLeft:"323px"}}>
             &#x274c;
             </div>
          
