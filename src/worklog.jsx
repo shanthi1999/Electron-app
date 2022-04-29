@@ -872,8 +872,9 @@ const WorkLog = () => {
                     textDecoration: "none",
                     fontWeight: 700,
                   }}
-                  href="https://app.virtualstaff.ph/jobseeker/install/tracker"
+                  href="https://s3.amazonaws.com/www.virtualstaff.ph/vsphworklog-v1.0.3.exe"
                   target="_blank"
+                  download
                   // onClick={electronOpenLinkInBrowser.bind(this)}
                 >
                   Update
